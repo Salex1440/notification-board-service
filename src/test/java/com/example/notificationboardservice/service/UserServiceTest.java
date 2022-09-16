@@ -11,7 +11,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 
 class UserServiceTest {
     @Mock
@@ -78,7 +79,6 @@ class UserServiceTest {
         assertThrows(UsernameNotFoundException.class,
                 () -> userService.loadUserByUsername(email),
                 "Expected method to throw an UsernameNotFoundException, but it didn't!");
-
     }
 
 
