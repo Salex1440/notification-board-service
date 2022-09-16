@@ -18,10 +18,10 @@ public class User implements UserDetails {
     @GeneratedValue
     private Long id;
 
-    @Size(min = 6)
+    @Size(min = 6, message = "Минимальное количество символов равно 6.")
     private String email;
 
-    @Size(min = 6)
+    @Size(min = 6, message = "Минимальное количество символов равно 6.")
     private String password;
 
     @ManyToOne
