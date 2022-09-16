@@ -7,6 +7,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,12 +26,15 @@ class UserServiceTest {
     @Captor
     private ArgumentCaptor<User> userCaptor;
 
+    @Captor
+    private ArgumentCaptor<String> stringArgumentCaptor;
+
     AutoCloseable closeable;
 
     @Test
     void saveUser() {
         User user = new User();
-        user.setEmail("mail@mail.ru");
+        user.setEmail("email@mail.ru");
         user.setPassword("password");
         user.setRole(new Role(1L, "USER"));
 
@@ -46,13 +50,37 @@ class UserServiceTest {
     @Test
     void userAlreadyExists() {
         User user = new User();
-        user.setEmail("mail@mail.ru");
+        user.setEmail("email@mail.ru");
         user.setPassword("password");
         user.setRole(new Role(1L, "USER"));
 
         doReturn(user).when(userRepositoryMock).findByEmail(user.getEmail());
         assertFalse(userService.saveUser(user));
     }
+
+    @Test
+    void loadUserByUsername() {
+        User user = new User();
+        user.setEmail("email@mail.ru");
+        user.setPassword("password");
+        user.setRole(new Role(1L, "USER"));
+
+        doReturn(user).when(userRepositoryMock).findByEmail(user.getEmail());
+        assertEquals(userService.loadUserByUsername(user.getEmail()), user);
+        verify(userRepositoryMock).findByEmail(stringArgumentCaptor.capture());
+        assertEquals(stringArgumentCaptor.getValue(), user.getEmail());
+    }
+
+    @Test
+    void loadUserByUsernameFailed() {
+        String email = "email@mail.ru";
+        doReturn(null).when(userRepositoryMock).findByEmail(email);
+        assertThrows(UsernameNotFoundException.class,
+                () -> userService.loadUserByUsername(email),
+                "Expected method to throw an UsernameNotFoundException, but it didn't!");
+
+    }
+
 
     @BeforeEach
     void initMocks() {
