@@ -7,6 +7,7 @@ import org.springframework.security.core.Transient;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import java.util.Set;
 
 @Entity
@@ -17,7 +18,7 @@ public class Role implements GrantedAuthority {
 
     private String name;
 
-    @ManyToMany(mappedBy = "roles")
+    @OneToMany
     private Set<User> users;
 
     public Role() {
